@@ -87,14 +87,13 @@ USER node
 CMD ["yarn", "start"]
 ```
 
-###### Notes:
+###### Notes
 
 - Multi-stage builds are used to reduce the final size of the container.
 A base image is used to share environment variables between build & runtime stages.
 - `npm prune --production` and `node-prune` are used to reduce the final size of `node_modules/`
 - No process manager is used (eg pm2) as by default Dokku will automatically restart containers that exit with a non-zero, so there's no need for an extra process manager.
 - `yarn` is used to start the process as it handles termination signals (eg SIGINT) for us. If your app handles these signals itself, then you'll need to start the process with node.
-
 
 ### Create & Deploy the dokku App
 
@@ -270,7 +269,7 @@ jobs:
             dokku cleanup"
 ```
 
-###### Notes:
+###### Notes
 
 - Static assets are copied out of the docker image as the file hashes don't match when building in different OS environments (even when setting the Next.js build ID).
 

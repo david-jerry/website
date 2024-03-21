@@ -5,13 +5,13 @@ A Software Engineer with over a decade experience building fintech, crypto, gove
 Built With
  [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-#### Social Accounts
+## Social Accounts
 
 You can connect with me here.
 
 [Linkedin.com](https://www.linkedin.com/in/jeremiahedavid)
 [Github Account](https://github.com/david-jerry)
 
-#### Deployment Instructions
+## Deployment Instructions
 
 [Deployment Instructions using Dokku Server](DEPLOY.md)
