@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     "Build a crypto exchange with Next.js",
     "Enterprise application development services",
   ],
+  alternates: {
+    canonical: "/about"
+  }
 }
 
 export default function About() {
