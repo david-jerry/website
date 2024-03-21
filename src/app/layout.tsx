@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    images: 'https://jeremiahedavid.online/me.png',
+    images: 'https://jeremiahedavid.online/me.webp',
     title: 'Jeremiah David',
     description: "Full-stack dev: Python/Django backends, React/Flutter UIs. Builds fintech, crypto, & enterprise apps.",
     url: 'https://jeremiahedavid.online',
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     title: 'Jeremiah David',
     description: "Full-stack dev: Python/Django backends, React/Flutter UIs. Builds fintech, crypto, & enterprise apps.",
     creator: '@jeremiahedavid',
-    images: ['https://jeremiahedavid.online/me.png'], // Must be an absolute URL
+    images: ['https://jeremiahedavid.online/me.webp'], // Must be an absolute URL
   },
   robots: {
     index: false,
@@ -101,8 +101,6 @@ export const viewport: Viewport = {
   themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#040876" }],
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
   interactiveWidget: 'resizes-visual',
   colorScheme: 'light',
 }
