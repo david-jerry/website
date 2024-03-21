@@ -1,36 +1,93 @@
----
-name: "Deploy Portfolio"
-
+name: Publish
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  publish-docker:
+    name: Publish docker image
+    runs-on: ubuntu-22.04
     steps:
-      - name: Cloning repo
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
         with:
-          fetch-depth: 0
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-      # - name: Installing Dependencies
-      #   run: yarn install
-
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-      #     aws-region: us-east-1
-
-      - name: Push to dokku
-        uses: dokku/github-action@master
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
         with:
-          git_remote_url: "ssh://dokku@asetrecova.com:profile"
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Build and push docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/${{ github.repository_owner }}/app:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          build-args: |
+            APP_VERSION=${{ github.event.release.tag_name }}
+  publish-s3:
+    name: Publish to S3
+    needs: [publish-docker]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Copy static files from docker image
+        run: |
+          docker pull ghcr.io/${{ github.repository_owner }}/app:latest
+          docker run -i --name helper ghcr.io/${{ github.repository_owner }}/app:latest true
+          docker cp helper:/app/.next .
+          docker rm helper
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Sync static assets to S3
+        run: aws s3 sync .next/static s3://${{ secrets.AWS_S3_BUCKET }}/_next/static --cache-control public,max-age=31536000,immutable --size-only
+  deploy:
+    name: Deploy app
+    needs: [publish-docker, publish-s3]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.DOKKU_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy app
+        run: |
+          ssh root@${{ secrets.DOKKU_HOST }} "\\
+            docker pull ghcr.io/${{ github.repository_owner }}/app:latest && \\
+            docker tag ghcr.io/${{ github.repository_owner }}/app:latest dokku/app:latest && \\
+            dokku config:set --no-restart app APP_VERSION=\"${{ github.event.release.tag_name }}\" && \\
+            dokku tags:deploy app latest && \\
+            dokku cleanup"
