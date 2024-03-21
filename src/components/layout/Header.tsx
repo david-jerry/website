@@ -12,6 +12,7 @@ export default function Header() {
           className="group-hover:animate-pulse duration-300 w-14 flex"
           fill="none"
           viewBox="0 0 220 194"
+          width="56px"
         >
           <path
             stroke="currentcolor"

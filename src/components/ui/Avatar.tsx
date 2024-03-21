@@ -6,7 +6,7 @@ export default function Avatar() {
   return (
     <>
       <div className="max-w-none">
-        <img src={`/me.png`} alt="Jeremiah David" className='grayscale translate-z-0 w-3/4 mx-auto lg:mx-0 lg:w-full lg:h-full' />
+        <Image width={260} height={200} src={`/me.png`} alt="Jeremiah David" className='grayscale translate-z-0 w-3/4 mx-auto lg:mx-0 lg:w-full lg:h-full' />
       </div>
     </>
   )

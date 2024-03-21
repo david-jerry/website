@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   creator: "Jeremiah David",
   publisher: "Jeremiah David",
   alternates: {
-    canonical: '/%s',
+    canonical: '/',
   },
   authors: [
     {
@@ -101,10 +101,10 @@ export const viewport: Viewport = {
   themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#040876" }],
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   interactiveWidget: 'resizes-visual',
-  colorScheme: 'dark',
+  colorScheme: 'light',
 }
 export default function RootLayout({
   children,

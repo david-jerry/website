@@ -54,6 +54,7 @@ export default function Nav() {
                 {navData.map((link, index) => {
                     return (
                         <Link
+                            title={link.title}
                             className={`${pathname === link.path && 'text-primary'} hover:text-primary duration-300 ease-linear relative flex items-center group transition-all`}
                             key={index}
                             href={link.path}>

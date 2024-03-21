@@ -83,7 +83,7 @@ export default function ThemeButton() {
 
     return (
         <>
-            <button className="text-xl hover:text-primary duration-300 ease-linear" type="button" onClick={toggleDarkMode}>
+            <button title="theme switcher" className="text-xl hover:text-primary duration-300 ease-linear" type="button" onClick={toggleDarkMode}>
                 <Icon id={isDarkMode ? 'sun' : 'moon'} className='flex-none h-6 w-6' icon={isDarkMode ? "line-md:sun-rising-twotone-loop" : "line-md:moon-rising-loop"} width="1.2em" height="1.2em" />
                 {/* {isDarkMode ? <FaSun className="animate-spin-slower"/> : <FaMoon className="animate-pulse"/>} */}
             </button>
