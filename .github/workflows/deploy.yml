@@ -32,5 +32,5 @@ jobs:
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
-          git_remote_url: "ssh://dokku@bytestreaminnovators.online:profile"
+          git_remote_url: "ssh://dokku@asetrecova.com:profile"
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
